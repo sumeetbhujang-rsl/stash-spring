@@ -1,10 +1,10 @@
 package com.sumeet.stash.bookmark;
 
 import com.sumeet.stash.config.StashProperties;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -26,5 +26,13 @@ public class BookmarkController {
     @GetMapping("/info")
     public StashProperties getInfo() {
         return stashProperties;
+    }
+
+    @PostMapping("/bookmarks")
+    public ResponseEntity<BookmarkRecord> createBookmark(@RequestBody CreateBookmarkRequest request) {
+        BookmarkRecord created = bookmarkService.create(request.url(), request.title());
+        return ResponseEntity
+                .created(URI.create("api/v1/bookmarks/" + created.id()))
+                .body(created);
     }
 }

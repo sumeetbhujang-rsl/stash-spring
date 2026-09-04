@@ -1,3 +1,3 @@
-spring:
-  application:
-    name: stash
+stash:
+    app-name: stash
+    max-bookmarks-per-user: 500

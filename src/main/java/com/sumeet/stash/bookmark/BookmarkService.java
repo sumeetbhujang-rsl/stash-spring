@@ -34,4 +34,13 @@ public class BookmarkService {
         bookmarks.put(id, updated);
         return Optional.of(updated);
     }
+
+    public boolean delete(Long id) {
+        if (!bookmarks.containsKey(id)) {
+            return false;
+        }
+
+        Bookmark b = bookmarks.remove(id);
+        return b != null;
+    }
 }

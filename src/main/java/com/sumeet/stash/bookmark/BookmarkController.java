@@ -52,4 +52,10 @@ public class BookmarkController {
                 .created(URI.create("api/v1/bookmarks/" + Bookmark.id()))
                 .body(Bookmark);
     }
+
+    @DeleteMapping("/bookmarks/{id}")
+    public ResponseEntity<Void> deleteBookmark(@PathVariable Long id) {
+        boolean b = bookmarkService.delete(id);
+        return b ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
 }

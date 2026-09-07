@@ -3,6 +3,7 @@ package com.sumeet.stash.bookmark;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,9 +24,18 @@ public class BookmarkService {
         return Optional.ofNullable(bookmarks.get(id));
     }
 
-    public ArrayList<Bookmark> listAll() {
-        return new ArrayList<>(bookmarks.values());
+    public List<Bookmark> listAll(int page, int size) {
+        List<Bookmark> list = new ArrayList<>(bookmarks.values());
+
+        int startIndex = page * size;
+        if (startIndex >= list.size()) {
+            return new ArrayList<>();
+        }
+
+        int endIndex = Math.min(startIndex + size, list.size());
+        return new ArrayList<>(list.subList(startIndex, endIndex));
     }
+
     public Optional<Bookmark> update(Long id, String url, String title) {
         if (!bookmarks.containsKey(id)) {
             return Optional.empty();
@@ -33,5 +43,14 @@ public class BookmarkService {
         Bookmark updated = new Bookmark(id, url, title);
         bookmarks.put(id, updated);
         return Optional.of(updated);
+    }
+
+    public boolean delete(Long id) {
+        if (!bookmarks.containsKey(id)) {
+            return false;
+        }
+
+        Bookmark b = bookmarks.remove(id);
+        return b != null;
     }
 }

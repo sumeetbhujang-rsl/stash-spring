@@ -20,9 +20,10 @@ public class BookmarkController {
     }
 
     @GetMapping("/bookmarks")
-    public List<Bookmark> getBookmarkService() {
-        System.out.println("bookmarks" + bookmarkService.listAll());
-        return bookmarkService.listAll();
+    public List<Bookmark> getBookmarkService(@RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "10") int size) {
+        System.out.println("bookmarks" + bookmarkService.listAll(page, size));
+        return bookmarkService.listAll(page, size);
     }
 
     @GetMapping("/bookmarks/{id}")
@@ -51,5 +52,11 @@ public class BookmarkController {
         return ResponseEntity
                 .created(URI.create("api/v1/bookmarks/" + Bookmark.id()))
                 .body(Bookmark);
+    }
+
+    @DeleteMapping("/bookmarks/{id}")
+    public ResponseEntity<Void> deleteBookmark(@PathVariable Long id) {
+        boolean b = bookmarkService.delete(id);
+        return b ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }

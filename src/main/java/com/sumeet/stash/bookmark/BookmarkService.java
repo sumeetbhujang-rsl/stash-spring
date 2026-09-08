@@ -11,15 +11,18 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class BookmarkService {
-    private final Map<Long, Bookmark> bookmarks = new ConcurrentHashMap<>();
-    private final AtomicLong idCounter = new AtomicLong(1);
+    private final BookmarkRepository bookmarkRepository;
 
-    public Bookmark create(String url, String title) {
-        Bookmark created = new Bookmark(idCounter.getAndIncrement(), url, title);
-        bookmarks.put(created.id(), created);
-        return created;
+    public BookmarkService(BookmarkRepository bookmarkRepository) {
+        this.bookmarkRepository = bookmarkRepository;
     }
 
+    public Bookmark create(String url, String title) {
+        Bookmark bookmark = new Bookmark(url, title);
+        return bookmarkRepository.save(bookmark);
+    }
+
+    /*
     public Optional<Bookmark> findByID(Long id) {
         return Optional.ofNullable(bookmarks.get(id));
     }
@@ -53,4 +56,5 @@ public class BookmarkService {
         Bookmark b = bookmarks.remove(id);
         return b != null;
     }
+     */
 }

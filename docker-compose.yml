@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: stash
+      POSTGRES_USER: stash_user
+      POSTGRES_PASSWORD: stash_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - stash_pg_data:/var/lib/postgresql/data
+
+volumes:
+  stash_pg_data:

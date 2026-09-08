@@ -1,3 +1,9 @@
 stash:
     app-name: stash
     max-bookmarks-per-user: 500
+
+spring:
+    datasource:
+        url: jdbc:postgresql://localhost:5432/stash
+        username: stash_user
+        password: stash_password

@@ -1,6 +1,8 @@
 package com.sumeet.stash.bookmark;
 
 import com.sumeet.stash.config.StashProperties;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,27 +21,26 @@ public class BookmarkController {
         this.stashProperties = stashProperties;
     }
 
-//    @GetMapping("/bookmarks")
-//    public List<Bookmark> getBookmarkService(@RequestParam(defaultValue = "0") int page,
-//                                             @RequestParam(defaultValue = "10") int size) {
-//        System.out.println("bookmarks" + bookmarkService.listAll(page, size));
-//        return bookmarkService.listAll(page, size);
-//    }
+    @GetMapping("/bookmarks")
+    public List<Bookmark> getBookmarkService(@RequestParam(defaultValue = "0") @Min(0) int page,
+                                             @RequestParam(defaultValue = "10") @Min(1) int size) {
+        return bookmarkService.listAll(page, size);
+    }
 
-//    @GetMapping("/bookmarks/{id}")
-//    public ResponseEntity<Bookmark> getBookmark(@PathVariable Long id) {
-//        Optional<Bookmark> optionalBookmark = bookmarkService.findByID(id);
-//        return optionalBookmark
-//                .map(ResponseEntity::ok)
-//                .orElse(ResponseEntity.notFound().build());
-//    }
+    @GetMapping("/bookmarks/{id}")
+    public ResponseEntity<Bookmark> getBookmark(@PathVariable Long id) {
+        Optional<Bookmark> optionalBookmark = bookmarkService.findByID(id);
+        return optionalBookmark
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
-//    @PutMapping("/bookmarks/{id}")
-//    public ResponseEntity<Bookmark> updateBookmark(@PathVariable Long id, @RequestBody CreateBookmarkRequest request) {
-//        return bookmarkService.update(id, request.url(), request.title())
-//                .map(ResponseEntity::ok)
-//                .orElse(ResponseEntity.notFound().build());
-//    }
+    @PutMapping("/bookmarks/{id}")
+    public ResponseEntity<Bookmark> updateBookmark(@PathVariable Long id, @RequestBody CreateBookmarkRequest request) {
+        return bookmarkService.update(id, request.url(), request.title())
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
     @GetMapping("/info")
     public StashProperties getInfo() {
@@ -47,16 +48,16 @@ public class BookmarkController {
     }
 
     @PostMapping("/bookmarks")
-    public ResponseEntity<Bookmark> createBookmark(@RequestBody CreateBookmarkRequest request) {
-        Bookmark Bookmark = bookmarkService.create(request.url(), request.title());
+    public ResponseEntity<Bookmark> createBookmark(@Valid @RequestBody CreateBookmarkRequest request) {
+        Bookmark bookmark = bookmarkService.create(request.url(), request.title());
         return ResponseEntity
-                .created(URI.create("api/v1/bookmarks/" + Bookmark.getId()))
-                .body(Bookmark);
+                .created(URI.create("api/v1/bookmarks/" + bookmark.getId()))
+                .body(bookmark);
     }
 
-//    @DeleteMapping("/bookmarks/{id}")
-//    public ResponseEntity<Void> deleteBookmark(@PathVariable Long id) {
-//        boolean b = bookmarkService.delete(id);
-//        return b ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
-//    }
+    @DeleteMapping("/bookmarks/{id}")
+    public ResponseEntity<Void> deleteBookmark(@PathVariable Long id) {
+        boolean deleted = bookmarkService.delete(id);
+        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
 }

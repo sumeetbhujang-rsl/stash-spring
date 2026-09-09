@@ -1,0 +1,163 @@
+### ============================================
+### SETUP — create ~5 bookmarks first
+### ============================================
+
+### Create bookmark 1
+POST http://localhost:8080/api/v1/bookmarks
+Content-Type: application/json
+
+{
+  "url": "https://spring.io",
+  "title": "Spring Framework"
+}
+
+### Create bookmark 2
+POST http://localhost:8080/api/v1/bookmarks
+Content-Type: application/json
+
+{
+  "url": "https://docs.spring.io/spring-boot",
+  "title": "Spring Boot Docs"
+}
+
+### Create bookmark 3
+POST http://localhost:8080/api/v1/bookmarks
+Content-Type: application/json
+
+{
+  "url": "https://www.postgresql.org",
+  "title": "PostgreSQL"
+}
+
+### Create bookmark 4
+POST http://localhost:8080/api/v1/bookmarks
+Content-Type: application/json
+
+{
+  "url": "https://flywaydb.org",
+  "title": "Flyway"
+}
+
+### Create bookmark 5
+POST http://localhost:8080/api/v1/bookmarks
+Content-Type: application/json
+
+{
+  "url": "https://www.docker.com",
+  "title": "Docker"
+}
+
+
+### ============================================
+### CRUD — DEMO REQUESTS
+### ============================================
+
+### List all bookmarks, page 0, size 10 (defaults)
+GET http://localhost:8080/api/v1/bookmarks
+
+### List with explicit pagination — page 0, size 2
+GET http://localhost:8080/api/v1/bookmarks?page=0&size=2
+
+### List page 1, size 2 — should show different bookmarks than page 0
+GET http://localhost:8080/api/v1/bookmarks?page=1&size=2
+
+### Get a single bookmark by id — update the id to match what you got back from create
+GET http://localhost:8080/api/v1/bookmarks/1
+
+### Get a bookmark that doesn't exist — expect 404
+GET http://localhost:8080/api/v1/bookmarks/9999
+
+### Update a bookmark — full replace
+PUT http://localhost:8080/api/v1/bookmarks/1
+Content-Type: application/json
+
+{
+  "url": "https://spring.io/projects/spring-framework",
+  "title": "Spring Framework (Updated)"
+}
+
+### Update a bookmark that doesn't exist — expect 404
+PUT http://localhost:8080/api/v1/bookmarks/9999
+Content-Type: application/json
+
+{
+  "url": "https://x.com",
+  "title": "X"
+}
+
+### Delete a bookmark — expect 204, no body
+DELETE http://localhost:8080/api/v1/bookmarks/8
+
+### Delete the same bookmark again — expect 404 (idempotency check)
+DELETE http://localhost:8080/api/v1/bookmarks/5
+
+
+### ============================================
+### VALIDATION — DEMO REQUESTS
+### ============================================
+
+### Create with blank title — expect 400
+POST http://localhost:8080/api/v1/bookmarks
+Content-Type: application/json
+
+{
+  "url": "https://example.com",
+  "title": ""
+}
+
+### Create with blank url — expect 400
+POST http://localhost:8080/api/v1/bookmarks
+Content-Type: application/json
+
+{
+  "url": "",
+  "title": "Missing URL"
+}
+
+### Create with both blank — expect 400 with both fields flagged
+POST http://localhost:8080/api/v1/bookmarks
+Content-Type: application/json
+
+{
+  "url": "",
+  "title": ""
+}
+
+### Create with whitespace-only title — @NotBlank should still catch this
+POST http://localhost:8080/api/v1/bookmarks
+Content-Type: application/json
+
+{
+  "url": "https://example.com",
+  "title": "   "
+}
+
+### Create with malformed JSON body — expect 400 (Jackson parse failure)
+POST http://localhost:8080/api/v1/bookmarks
+Content-Type: application/json
+
+not valid json
+
+### Update with blank fields — expect 400, same validation as create
+PUT http://localhost:8080/api/v1/bookmarks/1
+Content-Type: application/json
+
+{
+  "url": "",
+  "title": ""
+}
+
+### Negative page number — expect 400, not 500 with a stack trace
+GET http://localhost:8080/api/v1/bookmarks?page=-1&size=2
+
+### Zero size — expect 400
+GET http://localhost:8080/api/v1/bookmarks?size=0
+
+### Negative size — expect 400
+GET http://localhost:8080/api/v1/bookmarks?size=-5
+
+### Non-numeric page — expect 400 (Spring's own type conversion failure)
+GET http://localhost:8080/api/v1/bookmarks?page=abc
+
+### Non-numeric id on path variable — expect 400
+GET http://localhost:8080/api/v1/bookmarks/abc

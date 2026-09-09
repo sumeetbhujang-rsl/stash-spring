@@ -1,13 +1,12 @@
 package com.sumeet.stash.bookmark;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class BookmarkService {
@@ -20,6 +19,36 @@ public class BookmarkService {
     public Bookmark create(String url, String title) {
         Bookmark bookmark = new Bookmark(url, title);
         return bookmarkRepository.save(bookmark);
+    }
+
+    public List<Bookmark> listAll(int page, int size) {
+        Pageable p = PageRequest.of(page, size);
+        Page<Bookmark> result = bookmarkRepository.findAll(p);
+        return result.getContent();
+    }
+
+    public Optional<Bookmark> findByID(Long id) {
+        return bookmarkRepository.findById(id);
+    }
+
+    public Optional<Bookmark> update(Long id, String url, String title) {
+        Optional<Bookmark> existing = bookmarkRepository.findById(id);
+        if (existing.isPresent()) {
+            Bookmark bookmark = existing.get();
+            bookmark.setTitle(title);
+            bookmark.setUrl(url);
+            return Optional.of(bookmarkRepository.save(bookmark));
+        }
+
+        return Optional.empty();
+    }
+
+    public boolean delete(Long id) {
+        if (!bookmarkRepository.existsById(id)) {
+            return false;
+        }
+        bookmarkRepository.deleteById(id);
+        return true;
     }
 
     /*

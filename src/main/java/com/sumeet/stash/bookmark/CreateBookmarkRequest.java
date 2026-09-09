@@ -1,3 +1,8 @@
 package com.sumeet.stash.bookmark;
 
-public record CreateBookmarkRequest(String url, String title) {}
+import jakarta.validation.constraints.NotBlank;
+
+public record CreateBookmarkRequest(
+        @NotBlank String url,
+        @NotBlank String title
+) {}
